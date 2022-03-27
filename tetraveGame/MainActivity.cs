@@ -31,20 +31,7 @@ namespace tetraveGame
             imgGame = (ImageView)FindViewById(Resource.Id.imageViewGame);
             imgBlock = (ImageView)FindViewById(Resource.Id.imageViewBlock);
             EditText edit = (EditText)FindViewById(Resource.Id.editTextInput);
-            edit.KeyListener.SetOnKeyListener(onEditTextKey);
-
-            Boolean onEditTextKey(View v, int keyCode, KeyEvent event) 
-            {
-            // 这两个条件必须同时成立，如果仅仅用了enter判断，就会执行两次
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    // 执行发送消息等操作
-　　　　　　　　　　　　return true;
-                }
-                return false;
-            }
-            }
-
-game.init();
+            game.init();
             imgGame.Touch += onGameTuched;
             imgBlock.Touch += onBlockTuched;
             
