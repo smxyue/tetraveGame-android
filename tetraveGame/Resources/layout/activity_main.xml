@@ -21,14 +21,15 @@
             android:layout_height="match_parent"
             android:id="@+id/textViewMsg" />
         <Button
-            android:text="Button"
+            android:text="try"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/button1" />
+            android:id="@+id/buttonGo" />
         <EditText
             android:inputType="number"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:imeOptions="actionGo"
             android:id="@+id/editTextInput"
             android:width="300px" />
     </LinearLayout>

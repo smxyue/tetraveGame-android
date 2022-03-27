@@ -30,12 +30,90 @@ namespace tetraveGame
             txt = (TextView)FindViewById(Resource.Id.textViewMsg);
             imgGame = (ImageView)FindViewById(Resource.Id.imageViewGame);
             imgBlock = (ImageView)FindViewById(Resource.Id.imageViewBlock);
+            Button bt = (Button)FindViewById(Resource.Id.buttonGo);
+            bt.Click += onButtonGo;
             EditText edit = (EditText)FindViewById(Resource.Id.editTextInput);
+            edit.KeyPress += (object sender, View.KeyEventArgs e) => 
+            {
+                e.Handled = false;
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    string input = edit.Text;
+                    if (currentBlock == -1)
+                        currentBlock = 0;
+                    if (currentBlock >= TetraveGame.GAMEBLOCKS)
+                    {
+                        Toast.MakeText(this, "已经全部输入完成！如果您想修改/输入指定的块，先点击屏幕下方对应的块即可...", ToastLength.Short).Show();
+                        return;
+                    }
+                    int dir = 0;
+                    while(input.Length >0)
+                    {
+                        char ch = input[0];
+                        int v = input[0] - '0';
+                        if (v >=0 && v <=9)
+                        {
+                            game.matrix[currentBlock * 4 + dir] = v;
+                            dir++;
+                            if (dir >3)
+                            {
+                                currentBlock++;
+                                if (currentBlock >= TetraveGame.GAMEBLOCKS-1)
+                                {
+                                    break;
+                                }
+                                dir = 0;
+                            }
+                        }
+                        input = input.Substring(1);
+                    }
+                    showChs();
+                    edit.Text = "";
+                    e.Handled = true;
+                }
+            };
             game.init();
             imgGame.Touch += onGameTuched;
             imgBlock.Touch += onBlockTuched;
             
             //test();
+        }
+
+        private void onButtonGo(object sender, EventArgs e)
+        {
+            bool isfull = true;
+            for (int i = 0; i < TetraveGame.GAMEBLOCKS; i++)
+            {
+                for (int j = 0;j<3;j++)
+                {
+                    if (game.matrix[i * 4 + j] < 0 || game.matrix[i * 4 + j] > 9)
+                        isfull = false;
+                }
+            }
+            if (isfull)
+            {
+                game.qpl(game.chs, game.p,TetraveGame.GAMESCALE * TetraveGame.GAMESCALE);
+                if (game.checkp(game.p))
+                {
+                    showGame();
+                    Canvas cvs = new Canvas(blockBitmap);
+                    Paint paint = new Paint();
+                    paint.Color = Color.White;
+                    paint.SetStyle(Paint.Style.Fill);
+                    cvs.DrawRect(2, 2, boardSize - 2, boardSize - 2, paint);
+                    imgBlock.SetImageBitmap(blockBitmap);
+                    Toast.MakeText(this, "找到了...", ToastLength.Short).Show();
+                }
+            }
+        }
+
+        private void showGame()
+        {
+            for (int i = 0; i < 5; i++)
+                for (int j = 0; j < 5; j++)
+                {
+                    drawGrid(imgGame, gameBitmap, j, i, game.p[i * 5 + j]);
+                }
         }
 
         private void onBlockTuched(object sender, View.TouchEventArgs e)
@@ -107,13 +185,18 @@ namespace tetraveGame
                 blockBitmap = Bitmap.CreateBitmap(boardSize, boardSize, Bitmap.Config.Argb8888);
                 drawBoard(imgGame, gameBitmap, Color.Red);
                 drawBoard(imgBlock, blockBitmap, Color.Purple);
-                for(int i=0;i<5;i++)
-                    for(int j=0;j<5;j++)
-                    {
-                        drawGrid(imgBlock, blockBitmap,  j, i, i *5+j);
-                    }
+                showChs();
             }
             base.OnWindowFocusChanged(hasFocus);
+        }
+
+        private void showChs()
+        {
+            for (int i = 0; i < 5; i++)
+                for (int j = 0; j < 5; j++)
+                {
+                    drawGrid(imgBlock, blockBitmap, j, i, game.chs[i * 5 + j]);
+                }
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
