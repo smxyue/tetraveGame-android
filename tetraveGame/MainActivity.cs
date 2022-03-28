@@ -92,6 +92,11 @@ namespace tetraveGame
             }
             if (isfull)
             {
+                for(int i=0;i<TetraveGame.GAMEBLOCKS;i++)
+                {
+                    game.chs[i] = i;
+                    game.p[i] = -1;
+                }
                 game.qpl(game.chs, game.p,TetraveGame.GAMESCALE * TetraveGame.GAMESCALE);
                 if (game.checkp(game.p))
                 {
@@ -109,10 +114,10 @@ namespace tetraveGame
 
         private void showGame()
         {
-            for (int i = 0; i < 5; i++)
-                for (int j = 0; j < 5; j++)
+            for (int i = 0; i < TetraveGame.GAMESCALE; i++)
+                for (int j = 0; j < TetraveGame.GAMESCALE; j++)
                 {
-                    drawGrid(imgGame, gameBitmap, j, i, game.p[i * 5 + j]);
+                    drawGrid(imgGame, gameBitmap, j, i, game.p[i * TetraveGame.GAMESCALE + j]);
                 }
         }
 
@@ -130,7 +135,7 @@ namespace tetraveGame
                     game.chs[newCurrent] = game.p[currentPlace]; //移内容，非指针
                     game.p[currentPlace] = -1;
                     drawEmpty(imgGame, gameBitmap, currentPlace % TetraveGame.GAMESCALE, currentPlace / TetraveGame.GAMESCALE); //抹除放置位
-                    drawGrid(imgBlock, blockBitmap, currentPlace % TetraveGame.GAMESCALE, currentPlace / TetraveGame.GAMESCALE, game.chs[newCurrent]); //抹除放置位
+                    drawGrid(imgBlock, blockBitmap, newCurrent % TetraveGame.GAMESCALE, newCurrent / TetraveGame.GAMESCALE, game.chs[newCurrent]); //抹除放置位
                     currentPlace = -1;
                     currentBlock = -1;
                     return;
@@ -180,7 +185,7 @@ namespace tetraveGame
                 int layoutWidth = layout.Width;
                 int layoutHeight = layout.Height;
                 boardSize = layoutHeight >= 2 * layoutWidth ? layoutWidth : layoutHeight / 2;
-                gridSize = boardSize/5;
+                gridSize = boardSize/ TetraveGame.GAMESCALE;
                 gameBitmap = Bitmap.CreateBitmap(boardSize, boardSize, Bitmap.Config.Argb8888);
                 blockBitmap = Bitmap.CreateBitmap(boardSize, boardSize, Bitmap.Config.Argb8888);
                 drawBoard(imgGame, gameBitmap, Color.Red);
@@ -192,10 +197,10 @@ namespace tetraveGame
 
         private void showChs()
         {
-            for (int i = 0; i < 5; i++)
-                for (int j = 0; j < 5; j++)
+            for (int i = 0; i < TetraveGame.GAMESCALE; i++)
+                for (int j = 0; j < TetraveGame.GAMESCALE; j++)
                 {
-                    drawGrid(imgBlock, blockBitmap, j, i, game.chs[i * 5 + j]);
+                    drawGrid(imgBlock, blockBitmap, j, i, game.chs[i * TetraveGame.GAMESCALE + j]);
                 }
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

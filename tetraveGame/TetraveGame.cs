@@ -14,7 +14,7 @@ namespace tetraveGame
 {
     class TetraveGame
     {
-        public const int GAMESCALE = 5;
+        public const int GAMESCALE = 4;
         public const int GAMEBLOCKS = GAMESCALE * GAMESCALE;
         public const int GridFree = 5;
         public int[] NUMBAKE = { 0x3e3947, 0xc11d29, 0xffa449, 0xf7d42e, 0x59e58b, 0xb6845b, 0x9ac2f2, 0x1c61b6, 0xc162cc, 0xf7f6f5 };
@@ -64,10 +64,10 @@ namespace tetraveGame
         public void init()
         {
             //randomMatrix();
+            makeGame();
             for(int i=0;i<GAMEBLOCKS;i++)
             {
                 p[i] = -1;
-                chs[i] = i;
             }
         }
         void CloneChs(int[] old, int[] clone, int index, int size) //旧序列  新序列  要移除的元素索引  要克隆的序列长度。
@@ -213,6 +213,86 @@ namespace tetraveGame
                         qpl(newChs, newP, newSize);
                     }
                 }
+            }
+        }
+        public int neighborCloset(int closet)
+        {
+            int index = (int)Math.Truncate(closet / 4.0);
+            int dir = closet % 4;
+            int row = index / GAMESCALE;
+            int col = index % GAMESCALE;
+            switch(dir)
+            {
+                case 0:
+                    if (row > 0)
+                        return closet - 4*GAMESCALE +3;  //返回上一行同列的3位
+                    else
+                        return -1;
+                case 1:
+                    if (col > 0)
+                        return closet - 3;
+                    else
+                        return -1;
+                case 2:
+                    if (col < GAMESCALE - 1)
+                        return closet - 3;
+                    else
+                        return -1;
+                case 3:
+                    if (row < GAMESCALE - 1)
+                        return closet + 4 * GAMESCALE - 3;
+                    else
+                        return -1;
+                default:
+                    return -1;
+                            
+            }
+        }
+        public void makeGame()
+        {
+            for (int i = 0; i < GAMEBLOCKS * 4; i++)
+            {
+                matrix[i] = -1;
+            }
+            Random rand = new Random();
+            for (int i = 0; i < GAMEBLOCKS * 4; i++)
+            {
+                
+                if (matrix[i] == -1)
+                {
+                    int nc = neighborCloset(i);
+                    int v = rand.Next(10);
+                    if (nc != -1)
+                    {
+                        if (matrix[nc] != -1)
+                        {
+                            matrix[i] = matrix[nc];
+                        }
+                        else
+                        {
+                            
+                            matrix[i] = v;
+                            matrix[nc] = v;
+                        }
+                    }
+                    else
+                    {
+                        matrix[i] = v;
+                    }
+                }
+            }
+            for(int i=0;i<GAMEBLOCKS;i++)
+            {
+                chs[i] = -1;
+            }
+            for (int i = 0; i < GAMEBLOCKS; i++)
+            {
+                int room = rand.Next(GAMEBLOCKS);
+                while (chs.Contains(room))
+                {
+                    room = rand.Next(GAMEBLOCKS);
+                }
+                chs[i] = room;
             }
         }
     }
