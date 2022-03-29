@@ -14,8 +14,9 @@ namespace tetraveGame
 {
     class TetraveGame
     {
-        public const int GAMESCALE = 4;
-        public const int GAMEBLOCKS = GAMESCALE * GAMESCALE;
+        const int MAXBLOCKS = 25;
+        public  int GAMESCALE = 4;
+        public  int GAMEBLOCKS = 16;
         public const int GridFree = 5;
         public int[] NUMBAKE = { 0x3e3947, 0xc11d29, 0xffa449, 0xf7d42e, 0x59e58b, 0xb6845b, 0x9ac2f2, 0x1c61b6, 0xc162cc, 0xf7f6f5 };
         public int[] NUMCOLOR = { 0xf7f6f5, 0xf7f6f5, 0x3e3947, 0x3e3947, 0x3e3947, 0xf7f6f5, 0x3e3947, 0xf7f6f5, 0xf7f6f5, 0x3e3947, };
@@ -26,10 +27,10 @@ namespace tetraveGame
             char neighbor; //适配块
         };
         public int[] matrix = { 1,6,8,7,2,8,7,5,4,7,5,3,3,5,4,7,4,4,1,4,7,0,0,3,5,0,3,0,3,3,4,5,7,4,8,7,4,8,1,2,3,4,8,2,0,8,2,6,5,2,2,7,7,2,8,7,2,8,6,0,2,2,3,3,6,3,9,6,7,9,0,6,7,0,8,3,0,8,6,6,1,1,5,4,7,5,8,7,6,8,7,1,7,7,4,1,3,4,1,2};
-        public int[] p = new int[GAMEBLOCKS];
-        public int[] chs = new int[GAMEBLOCKS];
+        public int[] p = new int[MAXBLOCKS];
+        public int[] chs = new int[MAXBLOCKS];
         public int tryIndex = 0;
-        public int[] tryOrder = new int[GAMEBLOCKS]; //用过的块号
+        public int[] tryOrder = new int[MAXBLOCKS]; //用过的块号
         List<BackPoint> backList = new List<BackPoint>();
         int firstRoom = 0;
         void initTryOrder()
@@ -68,6 +69,18 @@ namespace tetraveGame
             for(int i=0;i<GAMEBLOCKS;i++)
             {
                 p[i] = -1;
+            }
+        }
+        public void blankMatrix()
+        {
+            for (int i=0;i<GAMEBLOCKS;i++)
+            {
+                p[i] = -1;
+                chs[i] = -1;
+                for (int j = 0; j < 4; j++)
+                {
+                    matrix[i * 4 + j] = -1;
+                }
             }
         }
         void CloneChs(int[] old, int[] clone, int index, int size) //旧序列  新序列  要移除的元素索引  要克隆的序列长度。
@@ -166,10 +179,11 @@ namespace tetraveGame
         }
         public bool checkp(int[] pp)
         {
-            int tindex;//相邻位
             for (int i = 0; i < GAMESCALE * GAMESCALE; i++)//检查所有9个位置是否都正确
             {
                 int index = pp[i]; //当排位为i的实际是matrix里的哪个
+                if (index == -1)
+                    return false;
                 if (!checkItem(pp, i, index))
                     return false;
             }
@@ -284,16 +298,142 @@ namespace tetraveGame
             for(int i=0;i<GAMEBLOCKS;i++)
             {
                 chs[i] = -1;
+                p[i] = -1;
             }
+            int[] tmp = new int[GAMEBLOCKS];
             for (int i = 0; i < GAMEBLOCKS; i++)
+                tmp[i] = GAMEBLOCKS - 1 - i;    //全排列
+            for (int i = GAMEBLOCKS; i >0 ; i--)
             {
-                int room = rand.Next(GAMEBLOCKS);
-                while (chs.Contains(room))
-                {
-                    room = rand.Next(GAMEBLOCKS);
+                int room = rand.Next(i);    //第i次选
+                chs[i-1] = tmp[room]; //随机选一个
+                if(room<i-1)
+                { 
+                    for (int j = room; j < i-1; j++)     //选中的后移丢弃
+                    {
+                        tmp[j] = tmp[j + 1];
+                    }
                 }
-                chs[i] = room;
             }
+        }
+        public bool jumpUp()
+        {
+            bool isok = true;
+            for (int i = 0; i < GAMESCALE; i++) //是否右空位可移
+            {
+                if (p[i] != -1)
+                {
+                    isok = false;
+                    break;
+                }
+            }
+            if (isok)
+            {
+                for (int i = GAMESCALE; i < GAMEBLOCKS; i++)//整体前移
+                {
+                    p[i-GAMESCALE] = p[i];
+                }
+                for (int i = 0; i < GAMESCALE; i++)//空出补空
+                {
+                    p[GAMEBLOCKS - i-1] = -1;
+                }
+            }
+            return isok;
+        }
+        public bool jumpDown()
+        {
+            bool isok = true;
+            for (int i = 1; i <= GAMESCALE; i++) //是否右空位可移
+            {
+                if (p[GAMEBLOCKS - i] != -1)
+                {
+                    isok = false;
+                    break;
+                }
+            }
+            if (isok)
+            {
+                for (int i = GAMEBLOCKS - 1; i > GAMESCALE; i--)//整体后移
+                {
+                    p[i] = p[i - GAMESCALE];
+                }
+                for (int i = 0; i < GAMESCALE; i++)//空出补空
+                {
+                    p[i] = -1;
+                }
+            }
+            return isok;
+        }
+        public bool jumpLeft()
+        {
+            bool isok = true;
+            for (int i = 0; i < GAMESCALE; i++) //是否左有空位可移
+            {
+                if (p[i* GAMESCALE] != -1)
+                {
+                    isok = false;
+                    break;
+                }
+            }
+            if (isok)
+            {
+                for (int i = 1; i < GAMEBLOCKS; i++)//左移，即非空位移到前一位
+                {
+                    if (p[i] != -1)
+                    {
+                        p[i - 1] = p[i];
+                        p[i] = -1;
+                    }
+                }
+            }
+            return isok;
+        }
+        public bool jumpRight()
+        {
+            bool isok = true;
+            for (int i = 0; i < GAMESCALE; i++) //是否左有空位可移
+            {
+                if (p[(i +1) * GAMESCALE -1] != -1)
+                {
+                    isok = false;
+                    break;
+                }
+            }
+            if (isok)
+            {
+                for (int i = GAMEBLOCKS-2; i >0; i--)//右移，即非空位加1
+                {
+                    if (p[i] != -1)
+                    {
+                        p[i+1] = p[i];
+                        p[i] = -1;
+                    }
+                }
+            }
+            return isok;
+        }
+        public bool JumpLine(int action)
+        {
+            switch (action)
+            {
+                case 1:
+                    return jumpUp();
+                case 2:
+                    return jumpUp() | jumpRight();
+                case 3:
+                    return jumpRight();
+                case 4:
+                    return jumpDown() | jumpRight();
+                case 5:
+                    return jumpDown();
+                case 6:
+                    return jumpDown() | jumpLeft();
+                case 7:
+                    return jumpLeft();
+                case 8:
+                    return jumpUp() | jumpLeft();
+            }
+            return false;
         }
     }
 }
