@@ -72,12 +72,10 @@ namespace tetraveGame
                             break;
 
 
-    }
-    Console.WriteLine("{0} selected", arg1.Item.TitleFormatted);
+                    }
                 };
 
                 menu.DismissEvent += (s2, arg2) => {
-                    Console.WriteLine("menu dismissed");
                 };
                 menu.Show();
             };
@@ -248,7 +246,6 @@ namespace tetraveGame
                     break;
                 case MotionEventActions.Up:
                     int action = getTouchAction(startx,  starty, e.Event.GetX(), e.Event.GetY());
-                    Toast.MakeText(this, "Action:" + action.ToString(), ToastLength.Short).Show();
                     int col = getGridNum(startx);
                     int row = getGridNum(starty);
                     if (action ==0)
