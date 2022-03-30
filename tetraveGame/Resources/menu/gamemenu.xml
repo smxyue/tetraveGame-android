@@ -18,10 +18,13 @@
     <item android:id="@+id/action_reload"
            android:showAsAction="always"
           android:title="打开"/>
-    <item android:id="@+id/action_blank"
-           android:showAsAction="always"
-          android:title="清空"/>
-    <item android:id="@+id/action_3X3"
+  <item android:id="@+id/action_blank"
+         android:showAsAction="always"
+        android:title="清空"/>
+  <item android:id="@+id/action_retry"
+         android:showAsAction="always"
+        android:title="重新开始"/>
+  <item android:id="@+id/action_3X3"
            android:showAsAction="always"
           android:title="3X3"/>
     <item android:id="@+id/action_4X4"

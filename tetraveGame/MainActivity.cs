@@ -8,6 +8,7 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.AppCompat.App;
 using System;
+using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
 
 namespace tetraveGame
 {
@@ -47,6 +48,9 @@ namespace tetraveGame
                             break;
                         case Resource.Id.action_blank:
                             game.blankMatrix();
+                            break;
+                        case Resource.Id.action_retry:
+                            game.retryGame();
                             break;
                         case Resource.Id.action_answer:
                             tryGame();
@@ -263,7 +267,12 @@ namespace tetraveGame
                                 lastBoard = -1;
                                 if (game.checkp(game.p))
                                 {
-                                    Toast.MakeText(this, "Bingo，you got it！", ToastLength.Long).Show();
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                                    builder.SetTitle("恭喜");
+                                    builder.SetMessage("你成功了！");
+                                    builder.SetIcon(Resource.Drawable.notification_tile_bg);
+                                    builder.SetCancelable(true);
+                                    builder.Show();
                                 }
                                 return;
                             }
@@ -303,7 +312,7 @@ namespace tetraveGame
                 LinearLayout layout = (LinearLayout)FindViewById(Resource.Id.linearLayoutGame);
                 int layoutWidth = layout.Width;
                 int layoutHeight = layout.Height;
-                boardSize = layoutHeight >= 2 * layoutWidth ? layoutWidth : layoutHeight / 2;
+                boardSize = (layoutHeight-5) >= 2 * layoutWidth ? layoutWidth : (layoutHeight-5) / 2;
                 gridSize = boardSize/ game.GAMESCALE;
                 gameBitmap = Bitmap.CreateBitmap(boardSize, boardSize, Bitmap.Config.Argb8888);
                 blockBitmap = Bitmap.CreateBitmap(boardSize, boardSize, Bitmap.Config.Argb8888);

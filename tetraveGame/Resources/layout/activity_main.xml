@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:minWidth="25px"
     android:minHeight="25px"
@@ -39,13 +40,20 @@
         android:minHeight="25px"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/linearLayoutGame" >
+        android:id="@+id/linearLayoutGame">
         <ImageView
             android:src="@android:drawable/ic_menu_gallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imageViewGame"
             android:layout_gravity="center" />
+        <ImageView
+            android:src="@android:drawable/ic_menu_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="5px"
+            android:id="@+id/imageView1"
+            android:contentDescription="description"
+            android:background="@android:color/holo_purple" />
         <ImageView
             android:src="@android:drawable/ic_menu_gallery"
             android:layout_width="wrap_content"

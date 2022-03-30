@@ -295,7 +295,11 @@ namespace tetraveGame
                     }
                 }
             }
-            for(int i=0;i<GAMEBLOCKS;i++)
+            randomChs();
+        }
+        public void randomChs()
+        {
+            for (int i = 0; i < GAMEBLOCKS; i++)
             {
                 chs[i] = -1;
                 p[i] = -1;
@@ -303,17 +307,26 @@ namespace tetraveGame
             int[] tmp = new int[GAMEBLOCKS];
             for (int i = 0; i < GAMEBLOCKS; i++)
                 tmp[i] = GAMEBLOCKS - 1 - i;    //全排列
-            for (int i = GAMEBLOCKS; i >0 ; i--)
+            Random rand = new Random();
+            for (int i = GAMEBLOCKS; i > 0; i--)
             {
                 int room = rand.Next(i);    //第i次选
-                chs[i-1] = tmp[room]; //随机选一个
-                if(room<i-1)
-                { 
-                    for (int j = room; j < i-1; j++)     //选中的后移丢弃
+                chs[i - 1] = tmp[room]; //随机选一个
+                if (room < i - 1)
+                {
+                    for (int j = room; j < i - 1; j++)     //选中的后移丢弃
                     {
                         tmp[j] = tmp[j + 1];
                     }
                 }
+            }
+        }
+        public void retryGame()
+        {
+            randomChs();
+            for(int i=0;i<GAMEBLOCKS;i++)
+            {
+                p[i] = -1;
             }
         }
         public bool jumpUp()
@@ -401,7 +414,7 @@ namespace tetraveGame
             }
             if (isok)
             {
-                for (int i = GAMEBLOCKS-2; i >0; i--)//右移，即非空位加1
+                for (int i = GAMEBLOCKS-2; i >=0; i--)//右移，即非空位加1
                 {
                     if (p[i] != -1)
                     {
