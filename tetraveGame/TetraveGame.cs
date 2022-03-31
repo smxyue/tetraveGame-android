@@ -366,13 +366,10 @@ namespace tetraveGame
             }
             if (isok)
             {
-                for (int i = GAMEBLOCKS - 1; i > GAMESCALE; i--)//整体后移
+                for (int i = GAMEBLOCKS - 1; i >= GAMESCALE; i--)//整体后移
                 {
                     p[i] = p[i - GAMESCALE];
-                }
-                for (int i = 0; i < GAMESCALE; i++)//空出补空
-                {
-                    p[i] = -1;
+                    p[i - GAMESCALE] = -1;
                 }
             }
             return isok;

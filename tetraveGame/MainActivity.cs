@@ -89,10 +89,10 @@ namespace tetraveGame
                 e.Handled = false;
                 if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
                 {
-                    string input = edit.Text;
+                    string str = edit.Text;
                     if (lastBoard != 1 || selectBlock == -1)
                     {
-                        selectBlock = 1;
+                        lastBoard = 1;
                         selectBlock = 0;
                     }
                     if (selectBlock >= game.GAMEBLOCKS )
@@ -102,17 +102,16 @@ namespace tetraveGame
                         return;
                     }
                     int dir = 0;
-                    while(input.Length >0)
+                    while(str.Length >0)
                     {
-                        char ch = input[0];
-                        int v = input[0] - '0';
+                        int v = str[0] - '0';
                         if (v >=0 && v <=9)
                         {
                             game.matrix[selectBlock * 4 + dir] = v;
-                            game.chs[selectBlock] = selectBlock;
                             dir++;
                             if (dir >3)
                             {
+                                game.chs[selectBlock] = selectBlock;
                                 selectBlock++;
                                 if (selectBlock >= game.GAMEBLOCKS-1)
                                 {
@@ -121,7 +120,7 @@ namespace tetraveGame
                                 dir = 0;
                             }
                         }
-                        input = input.Substring(1);
+                        str = str.Substring(1);
                     }
                     showChs();
                     edit.Text = "";
